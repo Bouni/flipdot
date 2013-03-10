@@ -7,8 +7,9 @@
 #include <util/delay.h>
 #include "main.h"
 
-#define HIGH        1
-#define LOW         0
+#define HIGH            1
+#define LOW             0
+#define PULSE_LENGTH    2
 
 // Pin mapping for Flip-Dot matrix row control transistors
 row_t row = {
@@ -107,7 +108,7 @@ void set_col(uint8_t n) {
     select_col(n);
     *data.port   |=  (1<<data.bit);
     *enable.port |=  (1<<enable.bit);
-    _delay_ms(1);    
+    _delay_ms(PULSE_LENGTH);    
     *enable.port &= ~(1<<enable.bit);
 }
 
@@ -115,7 +116,7 @@ void clear_col(uint8_t n) {
     select_col(n);
     *data.port   &= ~(1<<data.bit);
     *enable.port |=  (1<<enable.bit);
-    _delay_ms(1);    
+    _delay_ms(PULSE_LENGTH);    
     *enable.port &= ~(1<<enable.bit);
 }
 
