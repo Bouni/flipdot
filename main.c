@@ -9,7 +9,8 @@
 
 #define HIGH            1
 #define LOW             0
-#define PULSE_LENGTH    2
+#define PULSE_LENGTH    1 
+#define DELAY_TEST      90 
 
 // Pin mapping for Flip-Dot matrix row control transistors
 row_t row = {
@@ -149,8 +150,16 @@ int main(void) {
 
     // Main Loop
     while(1) {
-        set_rows(0x1803); // 0b1100000000011
-        set_col(2);        
+        for(uint8_t i=0; i<28; i+=2) {
+            set_rows(0b1); // 0b1100000000011
+            set_col(i);        
+        }
+        _delay_ms(DELAY_TEST);
+        for(uint8_t i=0; i<28; i+=2) {
+            clear_rows(0b1); // 0b1100000000011
+            clear_col(i);        
+        }
+        _delay_ms(DELAY_TEST);
     }
     return 0;
 }
