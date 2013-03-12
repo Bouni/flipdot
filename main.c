@@ -84,17 +84,25 @@ void clear_row(uint8_t n, uint8_t val) {
 
 void set_rows(uint16_t data) {
     for(uint8_t i=0; i<13; i++) {
-        set_row(i,(data & (1<<i)));
+        set_row(i,((data & (1<<i))>>i));
     }
 }
 
 void clear_rows(uint16_t data) {
     for(uint8_t i=0; i<13; i++) {
-        clear_row(i,(data & (1<<i)));
+        clear_row(i,((data & (1<<i))>>i));
     }
 }
 
 void select_col(uint8_t n) {
+    /* 
+     *  avoid that segment A0, A1 and A2 can be zero at the same time.
+     *  segment and digit encoding ist not binary.
+     */
+    n++;                                                      
+    if(n > 7)  { n += 1; }                                    
+    if(n > 15) { n += 1; }                                    
+    if(n > 23) { n += 1; } 
     for(uint8_t i=0; i<5; i++) {
         if(n & (1<<i)) {
             *col[i].port |=  (1<<col[i].bit);
@@ -124,8 +132,8 @@ int main(void) {
 
     // Main Loop
     while(1) {
-        set_rows(0x1803); // 0b01100000000011
-        set_col(0);        
+        set_rows(0x1803); // 0b1100000000011
+        set_col(2);        
     }
     return 0;
 }
