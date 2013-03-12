@@ -64,6 +64,21 @@ port_t enable = {
          &DDRK,&PORTK,PK7   // Arduino Pin A15   
 };
 
+void setup(void) {
+    // set all pins that control the row transistors to output 
+    for(uint8_t i=0; i<13; i++) {
+        *row.set[i].ddr   |= (1<<row.set[i].bit);
+        *row.clear[i].ddr |= (1<<row.clear[i].bit);
+    }
+    // set all pins that control the FP2800 column addressing to output
+    for(uint8_t j=0; j<5; j++) {
+        *col[j].ddr |= (1<<col[j].bit);        
+    }
+    // set data and enable pins to output
+    *data.ddr   |= (1<<data.bit);
+    *enable.ddr |= (1<<enable.bit);
+}
+
 void set_row(uint8_t n, uint8_t val) {
     if(val == LOW) {
         *row.set[n].port   &= ~(1<<row.set[n].bit); 
@@ -129,6 +144,8 @@ void clear_col(uint8_t n) {
 }
 
 int main(void) {
+
+    setup();
 
     // Main Loop
     while(1) {
