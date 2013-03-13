@@ -94,57 +94,22 @@ void clear_row(uint8_t n, uint8_t val) {
     }
 }
 
-void idle_row(uint8_t n) {
-    *row.set[n].port   &= ~(1<<row.set[n].bit);
-    *row.clear[n].port &= ~(1<<row.clear[n].bit);
-}
-
 void set_rows(uint16_t data) {
-    uint8_t start = 0;
-    uint8_t stop = start + PIXEL_AT_ONCE;
     for(uint8_t i=0; i<ROWS; i++) {
-        if(stop > ROWS) {
-            stop = ROWS;
-        }
-        // set all completet outputs to 0 
-        for(uint8_t j=0; j<start; j++) {
-            idle_row(j);
-        }
-        // set all pending outputs to necessary level 
-        for(uint8_t k=start; k<stop; k++) {
+        if(((data & (1<<i))>>i) == 1) {
             set_row(i,((data & (1<<i))>>i));
-            if(k == stop-1) {
-                start = stop;
-                pulse();
-            }
-        }
-        if(start == stop-1) {
-            return;
+            pulse();
+            set_row(i,0);
         }
     }
 }
 
 void clear_rows(uint16_t data) {
-    uint8_t start = 0;
-    uint8_t stop = start + PIXEL_AT_ONCE;
     for(uint8_t i=0; i<ROWS; i++) {
-        if(stop > ROWS) {
-            stop = ROWS;
-        }
-        // set all completet outputs to 0 
-        for(uint8_t j=0; j<start; j++) {
-            idle_row(j);
-        }
-        // set all pending outputs to necessary level 
-        for(uint8_t k=start; k<stop; k++) {
-            clear_row(k,((data & (1<<k))>>k));
-            if(k == stop-1) {
-                start = stop;
-                pulse();
-            }
-        }
-        if(start == stop-1) {
-            return;
+        if(((data & (1<<i))>>i) == 1) {
+            clear_row(i,((data & (1<<i))>>i));
+            pulse();
+            clear_row(i,0);
         }
     }
 }
