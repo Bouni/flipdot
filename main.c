@@ -14,13 +14,13 @@ int main(void) {
     // Main Loop
     while(1) {
         for(uint8_t i=0; i<28; i+=2) {
-            set_rows(0b1); // 0b1100000000011
-            set_col(i);        
+            set_rows(0b1,1); // 0b1100000000011
+            set_col(i,1);        
         }
         _delay_ms(DELAY_TEST);
         for(uint8_t i=0; i<28; i+=2) {
-            clear_rows(0b1); // 0b1100000000011
-            clear_col(i);        
+            set_rows(0b1,1); // 0b1100000000011
+            set_col(i,1);        
         }
         _delay_ms(DELAY_TEST);
     }

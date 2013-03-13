@@ -94,22 +94,18 @@ void clear_row(uint8_t n, uint8_t val) {
     }
 }
 
-void set_rows(uint16_t data) {
+void set_rows(uint16_t data, uint8_t direction) {
     for(uint8_t i=0; i<ROWS; i++) {
         if(((data & (1<<i))>>i) == 1) {
-            set_row(i,((data & (1<<i))>>i));
-            pulse();
-            set_row(i,0);
-        }
-    }
-}
-
-void clear_rows(uint16_t data) {
-    for(uint8_t i=0; i<ROWS; i++) {
-        if(((data & (1<<i))>>i) == 1) {
-            clear_row(i,((data & (1<<i))>>i));
-            pulse();
-            clear_row(i,0);
+            if(direction == 1) {
+                set_row(i,((data & (1<<i))>>i));
+                pulse();
+                set_row(i,0);
+            } else {
+                clear_row(i,((data & (1<<i))>>i));
+                pulse();
+                clear_row(i,0);
+            }
         }
     }
 }
@@ -135,13 +131,12 @@ void pulse(void) {
     *enable.port &= ~(1<<enable.bit);
 }
 
-void set_col(uint8_t n) {
+void set_col(uint8_t n, uint8_t direction) {
     select_col(n);
-    *data.port   |=  (1<<data.bit);
-}
-
-void clear_col(uint8_t n) {
-    select_col(n);
-    *data.port   &= ~(1<<data.bit);
+    if(direction == 1) {
+        *data.port   |=  (1<<data.bit);
+    } else {
+        *data.port   &= ~(1<<data.bit);
+    }
 }
 
