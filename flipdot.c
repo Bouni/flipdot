@@ -94,23 +94,49 @@ void clear_row(uint8_t n, uint8_t val) {
     }
 }
 
+void idle_row(uint8_t n) {
+    *row.set[n].port   &= ~(1<<row.set[n].bit);
+    *row.clear[n].port &= ~(1<<row.clear[n].bit);
+}
+
 void set_rows(uint16_t data) {
-    for(uint8_t i=0; i<13; i++) {
+    static uint8_t start = 0;
+    uint8_t stop = start + PIXEL_AT_ONCE;
+    if(stop > ROWS) {
+        stop = ROWS;
+    }
+    for(uint8_t i=0; i<start; i++) {
+        idle_row(i);
+    }
+    for(uint8_t i=start; i<stop; i++) {
         set_row(i,((data & (1<<i))>>i));
+        if(i == stop-1) {
+            start = stop;
+            pulse();
+        }
     }
 }
 
 void clear_rows(uint16_t data) {
-    for(uint8_t i=0; i<13; i++) {
+    static uint8_t start = 0;
+    uint8_t stop = start + PIXEL_AT_ONCE;
+    if(stop > ROWS) {
+        stop = ROWS;
+    }
+    for(uint8_t i=0; i<start; i++) {
+        idle_row(i);
+    }
+    for(uint8_t i=start; i<stop; i++) {
         clear_row(i,((data & (1<<i))>>i));
+        if(i == stop-1) {
+            start = stop;
+            pulse();
+        }
     }
 }
 
 void select_col(uint8_t n) {
-    /* 
-     *  avoid that segment A0, A1 and A2 can be zero at the same time.
-     *  segment and digit encoding ist not binary.
-     */
+    // The next 4 lines avoid that segment A0, A1 and A2 can be zero at the same time.
     n++;
     if(n > 7)  { n += 1; }
     if(n > 15) { n += 1; }
@@ -124,19 +150,19 @@ void select_col(uint8_t n) {
     }
 }
 
-void set_col(uint8_t n) {
-    select_col(n);
-    *data.port   |=  (1<<data.bit);
+void pulse(void) {
     *enable.port |=  (1<<enable.bit);
     _delay_ms(PULSE_LENGTH);
     *enable.port &= ~(1<<enable.bit);
 }
 
+void set_col(uint8_t n) {
+    select_col(n);
+    *data.port   |=  (1<<data.bit);
+}
+
 void clear_col(uint8_t n) {
     select_col(n);
     *data.port   &= ~(1<<data.bit);
-    *enable.port |=  (1<<enable.bit);
-    _delay_ms(PULSE_LENGTH);
-    *enable.port &= ~(1<<enable.bit);
 }
 

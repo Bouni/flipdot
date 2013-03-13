@@ -6,6 +6,7 @@
 #define LOW             0
 #define PULSE_LENGTH    1 
 #define PIXEL_AT_ONCE   2
+#define ROWS            13
 #define DELAY_TEST      100 
 
 typedef struct {
@@ -27,6 +28,7 @@ void clear_row(uint8_t n, uint8_t val);
 void set_rows(uint16_t data);
 void clear_rows(uint16_t data);
 void select_col(uint8_t n);
+void pulse(void);
 void set_col(uint8_t n);
 void clear_col(uint8_t n);
 
