@@ -55,7 +55,7 @@ TARGET = main
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = main.c 
+SRC = main.c flipdot.c 
 
 
 # List Assembler source files here.
