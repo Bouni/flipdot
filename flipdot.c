@@ -100,37 +100,51 @@ void idle_row(uint8_t n) {
 }
 
 void set_rows(uint16_t data) {
-    static uint8_t start = 0;
+    uint8_t start = 0;
     uint8_t stop = start + PIXEL_AT_ONCE;
-    if(stop > ROWS) {
-        stop = ROWS;
-    }
-    for(uint8_t i=0; i<start; i++) {
-        idle_row(i);
-    }
-    for(uint8_t i=start; i<stop; i++) {
-        set_row(i,((data & (1<<i))>>i));
-        if(i == stop-1) {
-            start = stop;
-            pulse();
+    for(uint8_t i=0; i<ROWS; i++) {
+        if(stop > ROWS) {
+            stop = ROWS;
+        }
+        // set all completet outputs to 0 
+        for(uint8_t j=0; j<start; j++) {
+            idle_row(j);
+        }
+        // set all pending outputs to necessary level 
+        for(uint8_t k=start; k<stop; k++) {
+            set_row(i,((data & (1<<i))>>i));
+            if(k == stop-1) {
+                start = stop;
+                pulse();
+            }
+        }
+        if(start == stop-1) {
+            return;
         }
     }
 }
 
 void clear_rows(uint16_t data) {
-    static uint8_t start = 0;
+    uint8_t start = 0;
     uint8_t stop = start + PIXEL_AT_ONCE;
-    if(stop > ROWS) {
-        stop = ROWS;
-    }
-    for(uint8_t i=0; i<start; i++) {
-        idle_row(i);
-    }
-    for(uint8_t i=start; i<stop; i++) {
-        clear_row(i,((data & (1<<i))>>i));
-        if(i == stop-1) {
-            start = stop;
-            pulse();
+    for(uint8_t i=0; i<ROWS; i++) {
+        if(stop > ROWS) {
+            stop = ROWS;
+        }
+        // set all completet outputs to 0 
+        for(uint8_t j=0; j<start; j++) {
+            idle_row(j);
+        }
+        // set all pending outputs to necessary level 
+        for(uint8_t k=start; k<stop; k++) {
+            clear_row(k,((data & (1<<k))>>k));
+            if(k == stop-1) {
+                start = stop;
+                pulse();
+            }
+        }
+        if(start == stop-1) {
+            return;
         }
     }
 }
